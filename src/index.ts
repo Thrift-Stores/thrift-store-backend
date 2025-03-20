@@ -24,7 +24,7 @@ app.get("/", async (req: Request, res: Response) => {
 //api's
 app.use("/api/auth", authRouter);
 
-app.use((err: any, req: Request, res: Response) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.status || 500;
   res.status(statusCode).json({
     success: false,

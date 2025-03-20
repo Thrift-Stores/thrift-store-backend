@@ -53,6 +53,7 @@ export const register = async (
       id: user._id,
       username: user.username,
       email: user.email,
+      role : user.role
     };
 
     res.status(201).json({
@@ -100,6 +101,7 @@ export const login = async (
       id: user._id,
       username: user.username,
       email: user.email,
+      role : user.role
     };
 
     res.status(200).json({
@@ -110,6 +112,25 @@ export const login = async (
   } catch (error) {
     next(error);
   }
+};
+
+
+export const verifyUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+try {
+  const user = await User.findById(req.userId).select('-password');
+
+  if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+  }
+  res.json(user);
+} catch (error) {
+  next(error);
+}
 };
 
 // Refresh Access Token

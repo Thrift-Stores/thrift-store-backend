@@ -44,6 +44,8 @@ export const createProduct = async (
   ): Promise<void> => {
     try {
       const { filenames } = req.body;
+      console.log(filenames);
+      
   
       if (!Array.isArray(filenames) || filenames.length === 0) {
         res.status(400).json({ error: "Invalid filenames array" });
@@ -52,14 +54,14 @@ export const createProduct = async (
   
       const signedUrls = await Promise.all(
         filenames.map(async (filename) => {
-          const filePath = `uploads/${filename}`; // ✅ Define filePath
+          const filePath = `uploads/${filename.name}`; // ✅ Define filePath
           const file = bucket.file(filePath);
   
           // ✅ Generate Signed URL (for Upload)
           const [url] = await file.getSignedUrl({
             action: "write", 
             expires: Date.now() + 15 * 60 * 1000, // 15 mins expiry
-            contentType: "image/png", 
+            contentType: filename.type, 
           });
   
           // ✅ Generate Public URL (for Viewing)
@@ -74,6 +76,7 @@ export const createProduct = async (
       next(error);
     }
   };
+  
   
   export const getProducts = async (
       req: Request,

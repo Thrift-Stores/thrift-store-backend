@@ -42,7 +42,6 @@ export const productSchema = z.object({
     .optional(),
 
   email: z.string()
-    .email({ message: "Invalid email format." })
     .optional(),
 
   meetingLocation: z.string()

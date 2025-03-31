@@ -8,7 +8,7 @@ import cors from "cors";
 const app = express();
 
 import authRouter from "./routes/auth.routes";
-import productRouter from "./routes/product.routes"
+import productRouter from "./routes/product.routes";
 
 //db connection
 connectToDb();
@@ -16,11 +16,15 @@ connectToDb();
 const PORT = process.env.PORT || 8080;
 
 //cors
-app.use(cors({
-  origin : process.env.ALLOWED_CLIENTS?.split(",").map((origin)=> origin.trim()) || ["http://localhost:3000"],
-  methods : ["GET", "POST", "PUT", "DELETE"],
-  credentials : true
-}));
+app.use(
+  cors({
+    origin: process.env.ALLOWED_CLIENTS?.split(",").map((origin) =>
+      origin.trim()
+    ) || ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 //middlewares
 app.use(express.json());

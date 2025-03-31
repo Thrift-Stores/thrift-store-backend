@@ -20,9 +20,9 @@ export const register = async (
 
     if (!parsedData.success) {
       console.log(parsedData.error.issues);
-      
-      const errors = parsedData.error.errors.map(err => err.message);
-      res.status(400).json({ message: errors[0] }); // Send one error at a time
+
+      const errors = parsedData.error.errors.map((err) => err.message);
+      res.status(400).json({ message: errors[1] }); // Send one error at a time
       return;
     }
 
@@ -60,7 +60,7 @@ export const register = async (
       id: user._id,
       username: user.username,
       email: user.email,
-      role : user.role
+      role: user.role,
     };
 
     res.status(201).json({
@@ -85,8 +85,8 @@ export const login = async (
 
     // If validation fails, return the first error
     if (!parsedData.success) {
-      const errors = parsedData.error.errors.map(err => err.message);
-      res.status(400).json({ message: errors[0] }); // Send one error at a time
+      const errors = parsedData.error.errors.map((err) => err.message);
+      res.status(400).json({ message: errors[1] }); // Send one error at a time
       return;
     }
 
@@ -132,23 +132,22 @@ export const login = async (
   }
 };
 
-
 export const verifyUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-try {
-  const user = await User.findById(req.userId).select('-password');
+  try {
+    const user = await User.findById(req.userId).select("-password");
 
-  if (!user) {
-    res.status(404).json({ message: 'User not found' });
-    return;
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.json(user);
+  } catch (error) {
+    next(error);
   }
-  res.json(user);
-} catch (error) {
-  next(error);
-}
 };
 
 // Refresh Access Token

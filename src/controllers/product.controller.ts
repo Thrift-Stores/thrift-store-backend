@@ -15,7 +15,7 @@ export const createProduct = async (
 
       if (!parsedData.success) {
         const errors = parsedData.error.errors.map(err => err.message);
-        res.status(400).json({ message: errors[0] }); // Send one error at a time
+        res.status(400).json({ message: errors[0], errors : parsedData.error }); // Send one error at a time
         return;
       }
       const userId = req.userId;

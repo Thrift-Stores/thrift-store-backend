@@ -9,6 +9,7 @@ const app = express();
 
 import authRouter from "./routes/auth.routes";
 import productRouter from "./routes/product.routes";
+import userRouter from "./routes/user.routes";
 
 //db connection
 connectToDb();
@@ -37,8 +38,11 @@ app.get("/", async (req: Request, res: Response) => {
 //api's
 app.use("/api/auth", authRouter);
 app.use("/api/product", productRouter);
+app.use("/api/user", userRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  
   const statusCode = err.status || 500;
   res.status(statusCode).json({
     success: false,

@@ -20,7 +20,7 @@ export const register = async (
 
     if (!parsedData.success) {
       const errors = parsedData.error.errors.map((err) => err.message);
-      res.status(400).json({ message: errors[1] }); // Send one error at a time
+      res.status(400).json({ message: errors[0] }); // Send one error at a time
       return;
     }
 
@@ -29,11 +29,6 @@ export const register = async (
     const userExists = await User.findOne({email});
     if (userExists) {
       res.status(400).json({ message: "Email already exists" });
-      return;
-    }
-
-    if (!email.endsWith("@cuchd.in")) {
-      res.status(400).json({ message: "Only CUCHD domain emails are allowed" });
       return;
     }
 

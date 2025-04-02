@@ -19,23 +19,16 @@ export const register = async (
     const parsedData = signupSchema.safeParse(req.body);
 
     if (!parsedData.success) {
-      console.log(parsedData.error.issues);
-
       const errors = parsedData.error.errors.map((err) => err.message);
-      res.status(400).json({ message: errors[1] }); // Send one error at a time
+      res.status(400).json({ message: errors[0] }); // Send one error at a time
       return;
     }
 
     const { username, email, password } = parsedData.data;
 
-    const userExists = await User.findOne({ $or: [{ email }, { username }] });
+    const userExists = await User.findOne({email});
     if (userExists) {
-      res.status(400).json({ message: "User already exists" });
-      return;
-    }
-
-    if (!email.endsWith("@cuchd.in")) {
-      res.status(400).json({ message: "Only CUCHD domain emails are allowed" });
+      res.status(400).json({ message: "Email already exists" });
       return;
     }
 
@@ -86,7 +79,7 @@ export const login = async (
     // If validation fails, return the first error
     if (!parsedData.success) {
       const errors = parsedData.error.errors.map((err) => err.message);
-      res.status(400).json({ message: errors[1] }); // Send one error at a time
+      res.status(400).json({ message: errors[0] }); // Send one error at a time
       return;
     }
 

@@ -4,7 +4,6 @@ export const signupSchema = z.object({
     email: z.string()
       .trim()
       .email({ message: "Invalid email address. Please enter a valid email." })
-      .endsWith("@cuchd.in", { message: "Email must end with @cuchd.in" })
       .nonempty({ message: "Email is required" }),
   
     username: z.string()
@@ -26,7 +25,6 @@ export const loginSchema = z.object({
     email: z.string()
     .trim()
     .email({ message: "Invalid email address. Please enter a valid email." })
-    .endsWith("@cuchd.in", { message: "Email must end with @cuchd.in" })
     .nonempty({ message: "Email is required" }),  
 
     password : z.string()

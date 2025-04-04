@@ -1,0 +1,52 @@
+name: Deploy to EC2 on push to main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3 
+
+      - name: 🔧 Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23.7.0
+
+      - name: 📦 Install dependencies
+        run: |
+            npm install -g pnpm
+            pnpm install
+
+      - name: ⚡ Build the project
+        run: |
+          pnpm run build
+
+      - name: 🔑 Setup SSH connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 📂 Deploy to EC2
+        run: |
+            ssh -i ~/.ssh/my-server.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+              export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v23.11.0/bin/
+        
+              cd thrift-store-backend
+        
+              git pull origin main
+        
+              pnpm install 
+        
+              pnpm run build
+        
+              pm2 restart all
+            EOF
+        

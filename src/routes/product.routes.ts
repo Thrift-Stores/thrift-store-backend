@@ -7,7 +7,7 @@ const router : Router = express.Router();
 
 router.route('/')
     .post(isAuthenticated, createProduct)
-    .get(getProducts);
+    .get(isAuthenticated, getProducts);
 
 router.route('/:id')
     .get(getProductbyId)

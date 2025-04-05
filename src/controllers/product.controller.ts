@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { Product } from "../models/product.model";
 import { productSchema } from "../validation/productValidations";
 import bucket from "../config/firebase";
+import { User } from "../models/user.model";
+import ExpressError from "../utils/errorHandler";
 
 
 export const createProduct = async (
@@ -79,33 +81,49 @@ export const createProduct = async (
   
   
   export const getProducts = async (
-      req: Request,
-      res: Response,
-      next: NextFunction
+    req: Request,
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
-      try {
-          const page = Math.abs(Number(req.query.page) || 1);
-          const limit = Math.abs(Number(req.query.limit) || 10);
-          const skip = (page - 1) * limit;
+    try {
+      const page = Math.abs(Number(req.query.page) || 1);
+      const limit = Math.abs(Number(req.query.limit) || 10);
+      const skip = (page - 1) * limit;
   
-          // Fetch paginated products
-          const products = await Product.find()
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit);
+      const user = await User.findById(req.userId);
   
-          // Get total product count
-          const totalProducts = await Product.countDocuments();
-  
-          res.status(200).json({
-              success: true,
-              totalPages: Math.ceil(totalProducts / limit),
-              currentPage: page,
-              data: products,
-          });
-      } catch (error) {
-          next(error);
+      if (!user) {
+        return next(new ExpressError("User not found", 400));
       }
+
+      const college = user.college || "chandigarh university";
+
+      // Fetch products where owner's college matches the user's college
+      const products = await Product.find()
+        .populate({
+          path: 'owner',
+          match: { college },
+          select: 'college name', // optional: limit populated fields
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+  
+      // Filter out products with no matched owner
+      const filteredProducts = products.filter(p => p.owner);
+  
+      const totalProducts = filteredProducts.length;
+  
+      res.status(200).json({
+        success: true,
+        totalPages: Math.ceil(totalProducts / limit),
+        currentPage: page,
+        data: filteredProducts,
+        college,
+      });
+    } catch (error) {
+      next(error);
+    }
   };
   
   export const getProductbyId = async (

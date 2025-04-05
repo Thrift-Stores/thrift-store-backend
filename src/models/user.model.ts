@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin", "delivery"],
       default: "user",
     },
+    college : {
+      type: String,
+      required: true,
+      set: (value: string) => value.toLowerCase().trim(),
+    }
   },
   { timestamps: true }
 );

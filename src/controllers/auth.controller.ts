@@ -20,11 +20,11 @@ export const register = async (
 
     if (!parsedData.success) {
       const errors = parsedData.error.errors.map((err) => err.message);
-      res.status(400).json({ message: errors[0] }); // Send one error at a time
+      res.status(400).json({ message: errors[0], errors }); // Send one error at a time
       return;
     }
 
-    const { username, email, password } = parsedData.data;
+    const { username, email, password, college } = parsedData.data;
 
     const userExists = await User.findOne({email});
     if (userExists) {
@@ -37,6 +37,7 @@ export const register = async (
       username,
       email,
       password: hashedPassword,
+      college
     });
 
     const refreshToken = generateRefreshToken(user._id.toString());
@@ -54,6 +55,7 @@ export const register = async (
       username: user.username,
       email: user.email,
       role: user.role,
+      college: user.college,
     };
 
     res.status(201).json({
@@ -113,6 +115,7 @@ export const login = async (
       username: user.username,
       email: user.email,
       role: user.role,
+      college: user.college,
     };
 
     res.status(200).json({

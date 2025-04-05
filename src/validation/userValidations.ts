@@ -18,6 +18,9 @@ export const signupSchema = z.object({
       .regex(/[0-9]/, { message: "Password must contain at least one number." })
       .regex(/[\W_]/, { message: "Password must contain at least one special character." })
       .nonempty({ message: "Password is required" }),
+
+      college : z.string()
+      .trim().nonempty({ message: "College is required" })
   });
 
 
